@@ -1,7 +1,10 @@
+DROP TABLE IF EXISTS reviews;
+-- もしreviewsテーブルが存在していたら削除し初期化
+
 CREATE TABLE reviews (
     id INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(255),
-    author VARCHAR(255),
+    author VARCHAR(100),
     status VARCHAR(10),
     score INTEGER,
     summary VARCHAR(1000),
