@@ -14,26 +14,71 @@ function dbConnect()
     return $link;
 }
 
+function validate($review)
+{
+    $errors = [];
+
+    // 書籍名が正しく入力されているかチェック
+    if (!mb_strlen($review['title'])) {
+        $errors['title'] = '書籍名を入力してください';
+    } elseif (mb_strlen($review['title']) > 255) {
+        $errors['title'] = '書籍名は255字以内に入力してください';
+    }
+
+    // 著書名が正しく入力されているかチェック
+    if (!mb_strlen($review['author'])) {
+        $errors['author'] = '書籍名を入力してください';
+    } elseif (mb_strlen($review['author']) > 100) {
+        $errors['author'] = '著書名は100字以内に入力してください';
+    }
+
+    // 読書状況が正しく入力されているかチェック
+    if (!in_array($review['status'], ['未読', '読んでる', '読了'], true)) {
+        $errors['status'] = '読書状況は「未読」「読んでる」「読了」のいずれかを入力してください';
+    }
+
+    // 整数1~5の条件で入力されているかチェック
+    if ($review['score'] < 1 || $review['score'] > 5) {
+        $errors['score'] = '評価は1〜5の整数を入力してください';
+    }
+
+    // 感想が正しく入力されているかチェック
+    if (!mb_strlen($review['summary'])) {
+        $errors['summary'] = '感想を入力してください';
+    } elseif (mb_strlen($review['summary']) > 1000) {
+        $errors['summary'] = '感想は1000字以内に入力してください';
+    }
+
+    return $errors;
+}
 
 function createReview($link)
 {
+    $review = [];
+
     echo '読書ログを登録してください' . PHP_EOL;
     echo '書籍名：';
-    $title = trim(fgets(STDIN));
+    $review['title'] = trim(fgets(STDIN));
 
     echo '著者名：';
-    $author = trim(fgets(STDIN));
+    $review['author'] = trim(fgets(STDIN));
 
     echo '読書状況（未読,読んでる,読了）：';
-    $status = trim(fgets(STDIN));
+    $review['status'] = trim(fgets(STDIN));
 
     echo '評価（5点満点の整数）：';
-    $score = (int)trim(fgets(STDIN));
+    $review['score'] = (int)trim(fgets(STDIN));
 
     echo '感想：';
-    $summary = trim(fgets(STDIN));
+    $review['summary'] = trim(fgets(STDIN));
 
-    echo '登録が完了しました' . PHP_EOL . PHP_EOL;
+    $validated = validate($review);
+    if (count($validated) > 0) {
+        foreach ($validated as $error) {
+            echo $error . PHP_EOL;
+        }
+        return;
+    }
 
     $sql = <<<EOT
         INSERT INTO reviews (
@@ -43,11 +88,11 @@ function createReview($link)
             score,
             summary
         ) VALUES (
-            "{$title}",
-            "{$author}",
-            "{$status}",
-            $score,
-            "{$summary}"
+            "{$review['title']}",
+            "{$review['author']}",
+            "{$review['status']}",
+            "{$review['score']}",
+            "{$review['summary']}"
         )
 EOT;
 
@@ -60,8 +105,8 @@ EOT;
     }
 }
 
-$reviews = [];
 $link = dbConnect();
+$reviews = [];
 
 function listReview($reviews)
 {
@@ -89,7 +134,7 @@ while (true) {
         createReview($link);
     } elseif ($num === '2') {
         // 読書ログを表示
-        listReview($reviews);
+        listReview($review);
     } elseif ($num === '9') {
         // アプリケーションを終了。データベースとの接続も切断する
         mysqli_close($link);
