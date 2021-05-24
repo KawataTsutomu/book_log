@@ -108,18 +108,24 @@ EOT;
 $link = dbConnect();
 $reviews = [];
 
-function listReview($reviews)
+function listReview($link)
 {
     echo '登録されている読書ログを表示します' . PHP_EOL;
 
-    foreach ($reviews as $review) {
-        echo '書籍名：' . $review['title'] . PHP_EOL;
-        echo '著者名：' . $review['author'] . PHP_EOL;
-        echo '読書状況：' . $review['status'] . PHP_EOL;
-        echo '評価：' . $review['score'] . PHP_EOL;
-        echo '感想：' . $review['summary'] . PHP_EOL;
+    $link = mysqli_connect('db', 'book_log', 'pass', 'book_log');
+    $sql = 'SELECT title, author, status, score, summary FROM reviews';
+    $results = mysqli_query($link, $sql);
+
+    while ($review = mysqli_fetch_assoc($results)) {
+        echo '書籍名： ' . $review['title'] . PHP_EOL;
+        echo '著者名： ' . $review['author'] . PHP_EOL;
+        echo '読書状況： ' . $review['status'] . PHP_EOL;
+        echo '評価： ' . $review['score'] . PHP_EOL;
+        echo '感想： ' . $review['summary'] . PHP_EOL;
         echo '-------------' . PHP_EOL;
     }
+
+    mysqli_free_result($results);
 }
 
 while (true) {
@@ -134,7 +140,7 @@ while (true) {
         createReview($link);
     } elseif ($num === '2') {
         // 読書ログを表示
-        listReview($review);
+        listReview($link);
     } elseif ($num === '9') {
         // アプリケーションを終了。データベースとの接続も切断する
         mysqli_close($link);
