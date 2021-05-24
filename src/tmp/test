@@ -1,0 +1,39 @@
+CREATE TABLE companies (
+    Id INTEGER AUTO_INCREMENT NOT NULL PRIMARY KEY,
+    name VARCHAR(255),
+    establishment_date DATE,
+    founder VARCHAR(255),
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+) DEFAULT CHARACTER SET = utf8mb4;
+INSERT INTO companies (
+ 	name,
+	establishment_date,
+	founder
+　) VALUES (
+    'mercury inc',
+	'2013-02-01',
+	'Shintaro yamada'
+　);
+
+INSERT INTO reviews (
+ 	title,
+	author,
+	status,
+	score,
+	summary
+　) VALUES (
+    'korokoro',
+	'yoshida',
+	'unread',
+	5,
+	'good'
+　);
+
+
+id INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(255),
+    author VARCHAR(100),
+    status VARCHAR(10),
+    score INTEGER,
+    summary VARCHAR(1000),
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
